@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const formValues = {
-  title: "",
+  name: "",
   price: "",
   description: "",
   category: "",
@@ -18,9 +18,11 @@ const EditProduct = () => {
   const getSpecificProduct = async (id) => {
     try {
       const { data } = await axios.get(
-        `http://localhost:4000/getSpecificProduct/${id}`
+        `http://localhost:5432/getSpecificProduct/${id}`
       );
-      setForm(data);
+      console.log('getSpecific', data);
+      const { name, price, description, category, image, rating } = data;
+      setForm({ name, price, description, category, image, rating });
       console.log(data, "Success");
     } catch (e) {
       console.log(e);
@@ -29,11 +31,14 @@ const EditProduct = () => {
 
   const updateProduct = async (e) => {
     e.preventDefault();
+    const dataToUpdate = { ...form, productid: id }
+    console.log('updateProduct', dataToUpdate);
     try {
-      const { data } = await axios.put(
-        `http://localhost:4000/updateProduct/${id}`,
-        form
+      await axios.put(
+        `http://localhost:5432/updateProduct/${id}`,
+        dataToUpdate
       );
+      console.log("updated data");
       setForm(formValues);
       navigate(`/list`);
     } catch (e) {
@@ -54,12 +59,12 @@ const EditProduct = () => {
         <form onSubmit={(e) => updateProduct(e)}>
           <label>
             <span className="fname">
-              Title <span className="required">*</span>
+              Name <span className="required">*</span>
             </span>
             <input
-              value={form.title}
+              value={form.name}
               type="text"
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              onChange={(e) => setForm({ ...form, Name: e.target.value })}
             />
           </label>
           <label>

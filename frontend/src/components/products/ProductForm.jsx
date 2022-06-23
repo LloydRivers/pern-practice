@@ -1,10 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../../styles/style.css";
 import axios from "axios";
 
 const ProductForm = () => {
   const formValues = {
-    title: "",
+    name: "",
     price: 0.0,
     description: "",
     category: "",
@@ -12,25 +13,19 @@ const ProductForm = () => {
     rating: 0.0,
   };
   const [form, setForm] = useState(formValues);
+  const navigate = useNavigate();
 
   const createProduct = async (e) => {
     e.preventDefault();
-
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/createProduct",
+        "http://localhost:5432/createProduct",
         form
       );
       console.log("inserted data");
 
-      setForm({
-        title: "",
-        price: 0.0,
-        description: "",
-        category: "",
-        image: "",
-        rating: 0.0,
-      });
+      setForm(formValues);
+      navigate("/list");
     } catch (e) {
       console.log(e);
     }
@@ -46,12 +41,12 @@ const ProductForm = () => {
           <form onSubmit={createProduct}>
             <label>
               <span className="fname">
-                Title <span className="required">*</span>
+                Name <span className="required">*</span>
               </span>
               <input
-                value={form.title}
+                value={form.name}
                 type="text"
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </label>
             <label>

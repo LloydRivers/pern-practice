@@ -6,10 +6,11 @@ import { useNavigate } from "react-router-dom";
 const ProductListing = () => {
   let navigate = useNavigate();
   const [allProducts, setAllProducts] = useState([]);
+  const [refetch, setRefetch] = useState(false);
 
   const getAllProducts = async () => {
     try {
-      const { data } = await axios.get("http://localhost:4000/getProducts");
+      const { data } = await axios.get("http://localhost:5432/getProducts");
       console.log(data);
 
       setAllProducts(data);
@@ -19,7 +20,8 @@ const ProductListing = () => {
   };
   const handleDelete = async (id) => {
     try {
-      await axios.delete(` http://localhost:4000/deleteProduct/${id}`);
+      await axios.delete(` http://localhost:5432/deleteProduct/${id}`);
+      setRefetch(true);
     } catch (e) {
       console.log(e);
     }
@@ -31,8 +33,10 @@ const ProductListing = () => {
     navigate(`/details/${id}`);
   };
   useEffect(() => {
+
     getAllProducts();
-  }, []);
+    setRefetch(false);
+  }, [refetch]);
   return (
     ///getProducts
     <>
@@ -46,7 +50,7 @@ const ProductListing = () => {
             >
               <thead>
                 <tr>
-                  <th>Title</th>
+                  <th>Name</th>
                   <th>Price</th>
                   <th>Description</th>
                   <th>Category</th>
@@ -58,12 +62,12 @@ const ProductListing = () => {
               <tbody>
                 {allProducts.map((product) => {
                   return (
-                    <tr key={product.id}>
+                    <tr key={product.productid}>
                       <td>
                         <div className="d-flex align-items-center">
                           <div className="">
                             <p className="font-weight-bold mb-0">
-                              {product.title}
+                              {product.name}
                             </p>
                           </div>
                         </div>
@@ -72,17 +76,17 @@ const ProductListing = () => {
                       <td>{product.description}</td>
                       <td>{product.category}</td>
                       <td>
-                        <img width="50px" src={product.image} />
+                        <img width="50px" src={product.image} alt={product.name} />
                       </td>
                       <td>{product.rating}</td>
                       <td>
-                        <button onClick={() => handleEdit(product.id)}>
+                        <button onClick={() => handleEdit(product.productid)}>
                           Edit
                         </button>
-                        <button onClick={() => handleDelete(product.id)}>
+                        <button onClick={() => handleDelete(product.productid)}>
                           Delete
                         </button>
-                        <button onClick={() => handleDetailsPage(product.id)}>
+                        <button onClick={() => handleDetailsPage(product.productid)}>
                           View
                         </button>
                       </td>
