@@ -1,17 +1,6 @@
 module.exports = {
     getProducts: async(req, res) => {
-        //get DB variable
-        const db = req.app.get('db'); //To get reference to the db folder
-
-        //Running SELECT * from products;
-        // db.products
-        //     .fetch_products()
-        //     .then((products) => {
-        //         res.status(200).send(products);
-        //     })
-        //     .catch((err) => {
-        //         res.status(500).json(err);
-        //     });
+        const db = req.app.get('db');
         try {
             const products = await db.products.find();
             res.status(200).send(products);
@@ -22,11 +11,9 @@ module.exports = {
     getSpecificProduct: async(req, res) => {
         const db = req.app.get('db');
         const { id } = req.params;
-
         try {
-            const product = await db.products.fetch_product_by_id(id);
-            // console.log(product);
-            res.status(200).send(product[0]);
+            const product = await db.products.findOne(id);
+            res.status(200).send(product);
         } catch (error) {
             console.log(error);
         }
@@ -36,14 +23,14 @@ module.exports = {
         const { name, price, image, category, description, rating } = req.body;
 
         try {
-            const product = await db.products.create_product(
+            await db.products.insert({
                 name,
                 price,
                 description,
                 category,
                 image,
-                rating
-            );
+                rating,
+            });
             res.status(200).send({ status: 'success', msg: 'Product created' });
         } catch (error) {
             console.log(error);
@@ -53,7 +40,9 @@ module.exports = {
         const db = req.app.get('db');
         const { id } = req.params;
         try {
-            const product = await db.products.delete_product(id);
+            // {productid in this case is the primary key of this table but in other
+            // tables it could be the specific primary key of the table }
+            await db.products.destroy({ productid: id });
             res.status(200).send({ status: 'success', msg: 'Product deleted' });
         } catch (error) {
             console.log(error);
@@ -61,19 +50,23 @@ module.exports = {
     },
     updateProduct: async(req, res) => {
         const db = req.app.get('db');
-        const { name, price, image, category, description, rating, productid } =
-        req.body;
+        const { name, price, image, category, description, rating } = req.body;
+        const { id } = req.params;
 
         try {
-            const product = await db.products.update_product(
+            // {productid in this case is the primary key of this table but in other
+            // tables it could be the specific primary key of the table
+            // this primary key is the value the function will use to find the product
+            // to update }
+            await db.products.update({
+                productid: id,
                 name,
                 price,
                 description,
                 category,
                 image,
                 rating,
-                productid
-            );
+            });
 
             res.status(200).send({ status: 'success', msg: 'Product updated' });
         } catch (error) {
