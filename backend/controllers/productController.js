@@ -1,20 +1,26 @@
 module.exports = {
     getProducts: async(req, res) => {
         //get DB variable
-        const db = req.app.get("db"); //To get reference to the db folder
+        const db = req.app.get('db'); //To get reference to the db folder
 
         //Running SELECT * from products;
-        db.products
-            .fetch_products()
-            .then((products) => {
-                res.status(200).send(products);
-            })
-            .catch((err) => {
-                res.status(500).json(err);
-            });
+        // db.products
+        //     .fetch_products()
+        //     .then((products) => {
+        //         res.status(200).send(products);
+        //     })
+        //     .catch((err) => {
+        //         res.status(500).json(err);
+        //     });
+        try {
+            const products = await db.products.find();
+            res.status(200).send(products);
+        } catch (err) {
+            res.status(500).json(err);
+        }
     },
     getSpecificProduct: async(req, res) => {
-        const db = req.app.get("db");
+        const db = req.app.get('db');
         const { id } = req.params;
 
         try {
@@ -26,7 +32,7 @@ module.exports = {
         }
     },
     createProduct: async(req, res) => {
-        const db = req.app.get("db");
+        const db = req.app.get('db');
         const { name, price, image, category, description, rating } = req.body;
 
         try {
@@ -36,29 +42,29 @@ module.exports = {
                 description,
                 category,
                 image,
-                rating,
+                rating
             );
-            res.status(200).send({ status: "success", msg: "Product created" });
+            res.status(200).send({ status: 'success', msg: 'Product created' });
         } catch (error) {
             console.log(error);
         }
     },
     deleteProduct: async(req, res) => {
-        const db = req.app.get("db");
+        const db = req.app.get('db');
         const { id } = req.params;
         try {
             const product = await db.products.delete_product(id);
-            res.status(200).send({ status: "success", msg: "Product deleted" });
+            res.status(200).send({ status: 'success', msg: 'Product deleted' });
         } catch (error) {
             console.log(error);
         }
     },
     updateProduct: async(req, res) => {
-        const db = req.app.get("db");
-        const { name, price, image, category, description, rating, productid } = req.body;
+        const db = req.app.get('db');
+        const { name, price, image, category, description, rating, productid } =
+        req.body;
 
         try {
-
             const product = await db.products.update_product(
                 name,
                 price,
@@ -69,10 +75,9 @@ module.exports = {
                 productid
             );
 
-            res.status(200).send({ status: "success", msg: "Product updated" });
+            res.status(200).send({ status: 'success', msg: 'Product updated' });
         } catch (error) {
             console.log(error);
         }
-
     },
 };
